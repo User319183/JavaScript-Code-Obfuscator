@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>JSfuscator - JavaScript Obfuscator</title>
+    <link rel="icon" href="assets/JSfuscatorFav.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1 class="page-title">JSfuscator</h1>
+    </header>
+    <div class="container">
+        <div>
+            <h1>Enter your code:</h1>
+            <form id="obfuscator-form">
+                <div class="form-group">
+                    <textarea id="code" name="code">
+// This function prints a greeting message to the console.
+function helloWorld() {
+    console.log("Hello, world!");
+}
+
+// Invoke the helloWorld function
+helloWorld();
+
+                    </textarea><br>
+                    <label><input type="checkbox" id="variableObfuscation" checked> Variable Obfuscation</label><br>
+                    <label><input type="checkbox" id="functionObfuscation" checked> Function Obfuscation</label><br>
+                    <label><input type="checkbox" id="stringObfuscation" checked> String Obfuscation</label><br>
+                    <label><input type="checkbox" id="integerObfuscation" checked> Integer Obfuscation</label><br>
+                    <label><input type="checkbox" id="deadCodeInjection" checked> Dead Code Injection</label><br>
+                    <label><input type="checkbox" id="removeComments" checked> Remove Comments</label><br>
+                    <label><input type="checkbox" id="stringSplitting" checked> String Splitting</label><br>
+                    <label><input type="checkbox" id="literalEncryption" checked> Literal Encryption</label><br>
+                    <label><input type="checkbox" id="redefineGlobals" checked> Redefine Globals</label><br>
+                    <input type="submit" value="Obfuscate">
+                </div>
+            </form>
+        </div>
+        <div>
+            <h2>Obfuscated Code:</h2>
+            <pre id="obfuscated" class="result"></pre>
+            <button id="copy-btn">Copy to Clipboard</button>
+            <button id="download-btn">Download as .js file</button>
+        </div>
+    </div>
+    <div id="spinner" class="spinner"></div>
+
+    <script>
+        document.getElementById('obfuscator-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            let code = document.getElementById('code').value;
+            const settings = {
+                variableObfuscation: document.getElementById('variableObfuscation').checked,
+                functionObfuscation: document.getElementById('functionObfuscation').checked,
+                stringObfuscation: document.getElementById('stringObfuscation').checked,
+                integerObfuscation: document.getElementById('integerObfuscation').checked,
+                deadCodeInjection: document.getElementById('deadCodeInjection').checked,
+                removeComments: document.getElementById('removeComments').checked,
+                stringSplitting: document.getElementById('stringSplitting').checked,
+                literalEncryption: document.getElementById('literalEncryption').checked,
+                redefineGlobals: document.getElementById('redefineGlobals').checked
+            };
+            fetch('/obfuscate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code, settings })
+            })
+                .then(response => response.text())
+                .then(obfuscatedCode => {
+                    document.getElementById('obfuscated').innerText = obfuscatedCode;
+                });
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', function () {
+            const obfuscatedCode = document.getElementById('obfuscated').innerText;
+            navigator.clipboard.writeText(obfuscatedCode).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+
+        document.getElementById('download-btn').addEventListener('click', function () {
+            const obfuscatedCode = document.getElementById('obfuscated').innerText;
+            const blob = new Blob([obfuscatedCode], { type: "text/javascript;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'obfuscated.js';
+            document.body.appendChild(link); // Firefox requires the link to be in the body
+            link.click();
+            document.body.removeChild(link); // Remove the link when done
+        });
+    </script>
+    <footer>
+        <p>© 2023 - 2024 JSfuscator</p>
+        <a href="index.html">Home</a> |
+        <a href="about.html">About Us & JSfuscator</a> |
+        <a href="tos.html">Terms of Service</a> |
+        <a href="privacypolicy.html">Privacy Policy</a> |
+        <a href="https://discord.gg/javascriptobfuscator">Join us on Discord</a>
+    </footer>
+</body>
+
+</html>
